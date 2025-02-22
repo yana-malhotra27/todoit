@@ -45,13 +45,19 @@ class Todo with TodoMappable {
   }
 }
 
+
 @MappableClass()
 class TodoCreate with TodoCreateMappable {
   final String title;
   final String? description;
 
   TodoCreate({required this.title, this.description});
-  static const fromJson = TodoCreateMapper.fromJson;
+  Map<String, dynamic> toJson() {
+    return {
+      "title": title,
+      "description": description ?? "", // Ensure it's not `null`
+    };
+  }
 }
 
 @MappableClass()

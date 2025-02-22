@@ -14,6 +14,14 @@ class AuthService {
     // Assuming the API key is valid, set it in the provider
     ref.read(apiKeyProvider.notifier).state = apiKey; // Correct way to set the state
   }
+  // This method simulates logging out the user
+  Future<void> logout() async {
+    // Implement your logout logic here
+    // For example, clear user data, tokens, etc.
+    // This is just a placeholder for demonstration purposes
+    print("User  logged out");
+    // You might want to clear any stored tokens or user data here
+  }
 }
 
 final authServiceProvider = Provider<AuthService>((ref) {
