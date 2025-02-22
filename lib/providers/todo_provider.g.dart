@@ -37,7 +37,7 @@ class _TodoService implements TodoService {
     )
         .compose(
           _dio.options,
-          '/todos/',
+          '/todos',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -77,7 +77,7 @@ class _TodoService implements TodoService {
     )
         .compose(
           _dio.options,
-          '/todos/',
+          '/todos',
           queryParameters: queryParameters,
           data: _data,
         )

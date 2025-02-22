@@ -10,10 +10,10 @@ part 'todo_provider.g.dart';
 abstract class TodoService {
   factory TodoService(Dio dio, {String? baseUrl}) = _TodoService;
 
-  @GET("/todos/")
+  @GET("/todos")
   Future<List<Todo>> getTodos(@Header("X-API-Key") String apiKey);
 
-  @POST("/todos/")
+  @POST("/todos")
   Future<Todo> createTodo(
       @Header("X-API-Key") String apiKey, @Body() TodoCreate todo);
 
@@ -25,7 +25,6 @@ abstract class TodoService {
   Future<void> deleteTodo(
       @Header("X-API-Key") String apiKey, @Path("id") int id);
 }
-
 // Provider for Dio with headers
 final dioProvider = Provider<Dio>((ref) {
   final apiKey = ref.watch(apiKeyProvider);
@@ -36,8 +35,7 @@ final dioProvider = Provider<Dio>((ref) {
       "X-API-Key": apiKey,
     },
     followRedirects: true, // Allow following redirects
-    validateStatus: (status) =>
-        status != null && status < 500, // ✅ Avoid null status
+    validateStatus: (status) => status != null && status < 500, // ✅ Avoid null status
   ));
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) {
@@ -81,21 +79,34 @@ class CustomTodoService {
   }
 
   Future<Todo?> createTodo(String apiKey, TodoCreate todo) async {
-    if (apiKey.isEmpty) {
-      throw Exception("❌ API Key is missing");
-    }
-
     try {
-      final response = await _dio.post(
-        '/todos/',
-        options: Options(headers: {"X-API-Key": apiKey}),
-        data: todo.toJson(),
-      );
+      final response = await _dio.post('/todos',
+          options: Options(headers: {"X-API-Key": apiKey}),
+          data: todo.toJson());
+
+      // ✅ If the response is a 307 redirect, extract the new URL
+      if (response.statusCode == 307) {
+        final newUrl = response.headers.value('location'); // Get the new URL
+
+        if (newUrl != null) {
+          // ✅ Resend the request to the new URL
+          final redirectResponse = await _dio.post(newUrl,
+              options: Options(headers: {"X-API-Key": apiKey}),
+              data: todo.toJson());
+
+          return Todo.fromJson(redirectResponse.data);
+        }
+      }
+
+      // ✅ Prevent crashes by checking for null
+      if (response.data == null) {
+        throw Exception("Error: Received null response from server");
+      }
 
       return Todo.fromJson(response.data);
-    } on DioException catch (e) {
-      print("🚨 Error creating TODO: ${e.response?.statusCode} - ${e.message}");
-      throw Exception("❌ Failed to create todo: ${e.message}");
+    } catch (e) {
+      print("🚨 Error creating TODO: $e");
+      return null; // Handle errors gracefully
     }
   }
 
