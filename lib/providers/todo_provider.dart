@@ -35,27 +35,6 @@ final dioProvider = Provider<Dio>((ref) {
       "Content-Type": "application/json",
       "X-API-Key": apiKey,
     },
-    followRedirects: true, // Allow following redirects
-    validateStatus: (status) =>
-        status != null && status < 500, // ✅ Avoid null status
-  ));
-  dio.interceptors.add(InterceptorsWrapper(
-    onRequest: (options, handler) {
-      print("🔹 Request: ${options.method} ${options.path}");
-      print("🔹 Headers: ${options.headers}");
-      print("🔹 Body: ${options.data}");
-      handler.next(options);
-    },
-    onResponse: (response, handler) {
-      print("✅ Response (${response.statusCode}): ${response.realUri}");
-      print("✅ Data: ${response.data}");
-      handler.next(response);
-    },
-    onError: (DioException e, handler) {
-      print("❌ Error: ${e.response?.statusCode} - ${e.message}");
-      print("❌ Response: ${e.response?.data}");
-      handler.next(e);
-    },
   ));
   return dio;
 });
@@ -94,8 +73,8 @@ class CustomTodoService {
 
       return Todo.fromJson(response.data);
     } on DioException catch (e) {
-      print("🚨 Error creating TODO: ${e.response?.statusCode} - ${e.message}");
-      throw Exception("❌ Failed to create todo: ${e.message}");
+      print(" Error creating TODO: ${e.response?.statusCode} - ${e.message}");
+      throw Exception(" Failed to create todo: ${e.message}");
     }
   }
 

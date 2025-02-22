@@ -8,8 +8,7 @@ import '../providers/auth_provider.dart'; // Import your auth provider
 class TodoPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final apiKey =
-        ref.watch(apiKeyProvider); // Ensure this provider exists and is set
+    final apiKey = ref.watch(apiKeyProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -20,9 +19,7 @@ class TodoPage extends ConsumerWidget {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
-              // Call the logout method from your auth provider
-              await ref.read(authServiceProvider).logout(); // Ensure you have a logout method in your auth provider
-              // Navigate back to the auth page
+              await ref.read(authServiceProvider).logout();
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => AuthPage()),
                 (route) => false,
@@ -31,29 +28,18 @@ class TodoPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: FutureBuilder<List<Todo>>(
-        future: ref.read(todoServiceProvider).getTodos(apiKey!),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }
-          final todos = snapshot.data!;
-
+      body: ref.watch(todoProvider).when(
+        data: (todos) {
           return ListView.builder(
             itemCount: todos.length,
             itemBuilder: (context, index) {
               final todo = todos[index];
               return Container(
-                margin: EdgeInsets.symmetric(
-                    vertical: 8.0), // Space between each list title
+                margin: EdgeInsets.symmetric(vertical: 8.0),
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(
-                        'lib/tilebg.jpg'), // Ensure this path is correct
-                    fit: BoxFit.cover, // Adjust as needed
+                    image: AssetImage('lib/tilebg.jpg'), // Ensure the path is correct
+                    fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(25.0),
                 ),
@@ -66,15 +52,14 @@ class TodoPage extends ConsumerWidget {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () {
-                          _showEditDialog(context, ref, apiKey, todo);
+                          _showEditDialog(context, ref, apiKey!, todo);
                         },
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: () {
-                          ref
-                              .read(todoServiceProvider)
-                              .deleteTodo(apiKey, todo.id);
+                        onPressed: () async {
+                          await ref.read(todoServiceProvider).deleteTodo(apiKey!, todo.id);
+                          ref.invalidate(todoProvider); // Refresh the todo list
                         },
                       ),
                     ],
@@ -84,10 +69,12 @@ class TodoPage extends ConsumerWidget {
             },
           );
         },
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text("Error: $err")),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showCreateDialog(context, ref, apiKey);
+          _showCreateDialog(context, ref, apiKey!);
         },
         child: Icon(Icons.add),
       ),
@@ -118,12 +105,13 @@ class TodoPage extends ConsumerWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 final newTodo = TodoCreate(
                   title: titleController.text,
                   description: descriptionController.text,
                 );
-                ref.read(todoServiceProvider).createTodo(apiKey, newTodo);
+                await ref.read(todoServiceProvider).createTodo(apiKey, newTodo);
+                ref.invalidate(todoProvider); // Refresh the todo list
                 Navigator.of(context).pop();
               },
               child: Text("Create"),
@@ -134,11 +122,9 @@ class TodoPage extends ConsumerWidget {
     );
   }
 
-  void _showEditDialog(
-      BuildContext context, WidgetRef ref, String apiKey, Todo todo) {
+  void _showEditDialog(BuildContext context, WidgetRef ref, String apiKey, Todo todo) {
     final titleController = TextEditingController(text: todo.title);
-    final descriptionController =
-        TextEditingController(text: todo.description ?? '');
+    final descriptionController = TextEditingController(text: todo.description ?? '');
 
     showDialog(
       context: context,
@@ -166,13 +152,11 @@ class TodoPage extends ConsumerWidget {
                   description: descriptionController.text,
                 );
                 try {
-                  await ref
-                      .read(todoServiceProvider)
-                      .updateTodo(apiKey, todo.id, updatedTodo);
+                  await ref.read(todoServiceProvider).updateTodo(apiKey, todo.id, updatedTodo);
+                  ref.invalidate(todoProvider); // Refresh the todo list
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Todo updated successfully!")),
                   );
-                  // Navigate back after the update
                   Navigator.of(context).pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
