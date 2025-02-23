@@ -26,7 +26,7 @@ abstract class TodoService {
       @Path("id") int id);
 }
 
-// Provider for Dio with headers
+// Provider for Dio
 final dioProvider = Provider<Dio>((ref) {
   final apiKey = ref.watch(apiKeyProvider);
   final dio = Dio(BaseOptions(

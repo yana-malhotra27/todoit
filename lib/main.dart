@@ -7,7 +7,7 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget { // Use ConsumerWidget instead of StatelessWidget
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
