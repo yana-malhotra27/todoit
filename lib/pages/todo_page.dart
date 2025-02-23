@@ -4,7 +4,7 @@ import 'package:todoit/pages/auth_page.dart';
 import 'package:todoit/providers/todo_provider.dart';
 import 'package:todoit/themes/theme_provider.dart';
 import '../model/models.dart';
-import '../providers/auth_provider.dart'; // Import your auth provider
+import '../providers/auth_provider.dart';
 
 class TodoPage extends ConsumerStatefulWidget {
   @override
@@ -12,13 +12,14 @@ class TodoPage extends ConsumerStatefulWidget {
 }
 
 class _TodoPageState extends ConsumerState<TodoPage> {
-  final ScrollController _scrollController = ScrollController(); // Declare here
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Properly dispose to prevent memory leaks
+    _scrollController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final apiKey = ref.watch(apiKeyProvider);
@@ -26,18 +27,17 @@ class _TodoPageState extends ConsumerState<TodoPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Todos"), // ✅ Keep text black
+        title: const Text("Todos"),
         centerTitle: true,
         elevation: 4,
-        backgroundColor: theme.appBarTheme.backgroundColor, // ✅ Uses theme setting
+        backgroundColor: theme.appBarTheme.backgroundColor,
         actions: [
-          // Theme toggle button
           IconButton(
             icon: Icon(ref.watch(themeProvider) == ThemeMode.light
                 ? Icons.dark_mode
                 : Icons.light_mode),
             onPressed: () {
-              ref.read(themeProvider.notifier).toggleTheme(); // Toggle theme
+              ref.read(themeProvider.notifier).toggleTheme();
             },
           ),
           IconButton(
@@ -54,46 +54,82 @@ class _TodoPageState extends ConsumerState<TodoPage> {
       ),
       body: Scrollbar(
         controller: _scrollController,
-        thickness: 6.0, // Width of the scrollbar
-        radius: const Radius.circular(10), // Rounded edges
-        thumbVisibility: true, // Shows the scrollbar when scrolling
+        thickness: 6.0,
+        radius: const Radius.circular(10),
+        thumbVisibility: true,
         child: ref.watch(todoProvider).when(
           data: (todos) {
             return ListView.builder(
-              controller: _scrollController, // Ensure this is attached!
+              controller: _scrollController,
               itemCount: todos.length,
               itemBuilder: (context, index) {
                 final todo = todos[index];
                 return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                   decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage('lib/tilebg.jpg'), // Ensure the path is correct
-                      fit: BoxFit.cover,
-                    ),
                     borderRadius: BorderRadius.circular(25.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 5,
+                        spreadRadius: 2,
+                      ),
+                    ],
                   ),
-                  child: ListTile(
-                    title: Text(todo.title, style: const TextStyle(color: Colors.black)), // ✅ Keep text black
-                    subtitle: Text(todo.description ?? '', style: const TextStyle(color: Colors.black54)), // ✅ Dark grey for subtitle
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.black), // ✅ Keep icon black
-                          onPressed: () {
-                            _showEditDialog(context, ref, apiKey!, todo);
-                          },
+                  height:  120,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(25.0),
+                        child: Image.asset(
+                          'lib/tilebg.jpg',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.black), // ✅ Keep icon black
-                          onPressed: () async {
-                            await ref.read(todoServiceProvider).deleteTodo(todo.id);
-                            ref.invalidate(todoProvider); // Refresh the todo list
-                          },
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 229, 199, 226).withOpacity(0.85),
+                          borderRadius: BorderRadius.circular(25.0),
                         ),
-                      ],
-                    ),
+                        child: ListTile(
+                          title: Text(
+                            todo.title,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            todo.description ?? '',
+                            style: const TextStyle(color: Colors.black54),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.black, size: 22),
+                                onPressed: () {
+                                  _showEditDialog(context, ref, apiKey!, todo);
+                                },
+                              ),
+                              const SizedBox(width: 6),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.black, size: 22),
+                                onPressed: () async {
+                                  await ref.read(todoServiceProvider).deleteTodo(todo.id);
+                                  ref.invalidate(todoProvider);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -107,9 +143,9 @@ class _TodoPageState extends ConsumerState<TodoPage> {
         onPressed: () {
           _showCreateDialog(context, ref, apiKey!);
         },
-        backgroundColor: const Color.fromARGB(255, 179, 59, 195),
-        //backgroundColor: Theme.of(context).colorScheme.primary, // ✅ Uses theme color
-        child: Icon(Icons.add, color: theme.colorScheme.onPrimary), // ✅ Icon in white for visibility
+        backgroundColor: Colors.purpleAccent.withOpacity(0.9),
+        elevation: 6,
+        child: Icon(Icons.add, color: theme.colorScheme.onPrimary),
       ),
     );
   }
