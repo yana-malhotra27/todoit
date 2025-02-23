@@ -43,7 +43,6 @@ class _TodoPageState extends ConsumerState<TodoPage> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await ref.read(authServiceProvider).logout();
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => AuthPage()),
                 (route) => false,
