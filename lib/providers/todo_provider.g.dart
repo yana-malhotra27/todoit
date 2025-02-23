@@ -24,11 +24,10 @@ class _TodoService implements TodoService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<List<Todo>> getTodos(String apiKey) async {
+  Future<List<Todo>> getTodos() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiKey};
-    _headers.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<List<Todo>>(Options(
       method: 'GET',
@@ -60,14 +59,10 @@ class _TodoService implements TodoService {
   }
 
   @override
-  Future<Todo> createTodo(
-    String apiKey,
-    TodoCreate todo,
-  ) async {
+  Future<Todo> createTodo(TodoCreate todo) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiKey};
-    _headers.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(todo.toJson());
     final _options = _setStreamType<Todo>(Options(
@@ -99,14 +94,12 @@ class _TodoService implements TodoService {
 
   @override
   Future<Todo> updateTodo(
-    String apiKey,
     int id,
     TodoUpdate todo,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiKey};
-    _headers.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(todo.toJson());
     final _options = _setStreamType<Todo>(Options(
@@ -137,14 +130,10 @@ class _TodoService implements TodoService {
   }
 
   @override
-  Future<void> deleteTodo(
-    String apiKey,
-    int id,
-  ) async {
+  Future<void> deleteTodo(int id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiKey};
-    _headers.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<void>(Options(
       method: 'DELETE',
