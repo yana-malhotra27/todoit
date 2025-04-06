@@ -32,17 +32,7 @@ class Todo with TodoMappable {
       this.description,
       required this.status,
       this.createdAt});
-  factory Todo.fromJson(Map<String, dynamic> json) {
-    return Todo(
-      id: json['id'], // Ensure this matches the API response
-      title: json['title'],
-      description: json['description'],
-      status: json['status'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null, // Parse the date string
-    );
-  }
+  static final fromJson = TodoMapper.fromJson;
 }
 
 
@@ -52,12 +42,7 @@ class TodoCreate with TodoCreateMappable {
   final String? description;
 
   TodoCreate({required this.title, this.description});
-  Map<String, dynamic> toJson() {
-    return {
-      "title": title,
-      "description": description ?? "", // Ensure it's not `null`
-    };
-  }
+  //final Map<String, dynamic> toJson = TodoCreateMapper.toJson;
 }
 
 @MappableClass()
@@ -68,11 +53,4 @@ class TodoUpdate with TodoUpdateMappable {
 
   TodoUpdate(
       {required this.title, required this.description, this.status="pending"});
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'description': description,
-      'status': status,
-    };
-  }
 }

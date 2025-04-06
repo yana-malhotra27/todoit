@@ -14,7 +14,7 @@ class AuthPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Authentication"),
+        title: const Text("Authentication"),
         centerTitle: true,
         elevation: 4,
       ),
@@ -22,34 +22,34 @@ class AuthPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image(
-              image: AssetImage('lib/logo.png'),
+            const Image(
+              image: const AssetImage('lib/logo.png'),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             TextField(
               obscureText: true,
               controller: apiKeyController,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock),
                 labelText: "API Key",
                 hintText: 'Enter your API Key',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue),
+                  borderSide: const BorderSide(color: Colors.blue),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blueAccent),
+                  borderSide: const BorderSide(color: Colors.blueAccent),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             isLoading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -69,7 +69,7 @@ class AuthPage extends ConsumerWidget {
                         MaterialPageRoute(builder: (context) => TodoPage()),
                       );
                     },
-                    child: Text("Login"),
+                    child: const Text("Login"),
                   ),
           ],
         ),
